@@ -2,22 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { FinancialData, PaymentDay, SavingsGoal } from '@/types/finance';
 
 const DEFAULT_DATA: FinancialData = {
-  paymentDays: [
-    { id: '1', day: 5, amount: 2500, description: 'Primeira quinzena' },
-    { id: '2', day: 20, amount: 2500, description: 'Segunda quinzena' },
-  ],
-  savingsPercentage: 15,
-  savingsGoals: [
-    {
-      id: '1',
-      name: 'Viagem',
-      targetAmount: 5000,
-      currentAmount: 1200,
-      icon: 'plane',
-      color: 'accent',
-    },
-  ],
-  monthlyExpenses: 3200,
+  paymentDays: [],
+  savingsPercentage: 0,
+  savingsGoals: [],
+  monthlyExpenses: 0,
   userName: '',
 };
 
