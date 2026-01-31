@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, TrendingUp, CreditCard, PiggyBank, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Wallet, TrendingUp, CreditCard, PiggyBank, Target, Calendar, BarChart3, Sparkles } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FinanceCard } from '@/components/ui/finance-card';
@@ -10,6 +11,7 @@ import { PaydayModal } from '@/components/PaydayModal';
 import { SavingsAdjustModal } from '@/components/SavingsAdjustModal';
 import { SavingsPerPayday } from '@/components/SavingsPerPayday';
 import { NextPaydayCountdown } from '@/components/NextPaydayCountdown';
+import { Button } from '@/components/ui/button';
 import { useFinancialData } from '@/hooks/useFinancialData';
 
 const Index = () => {
@@ -67,6 +69,42 @@ const Index = () => {
     setShowPaydayModal(true);
   };
 
+  // If no payment days are configured, show welcome screen
+  if (data.paymentDays.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <img
+                src="/15days.png"
+                alt="15days Logo"
+                className="w-20 h-20 mx-auto mb-6"
+              />
+              <h1 className="font-display text-4xl font-bold mb-4">
+                15days
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-md mx-auto mb-8">
+                Organize suas metas financeiras com base no seu salário, principalmente quinzenal. Configure seus dias de pagamento e acompanhe seu progresso.
+              </p>
+              <Button asChild className="rounded-xl">
+                <Link to="/configurar">
+                  Começar Configuração
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -96,13 +134,15 @@ const Index = () => {
             variant="accent"
             delay={0}
           />
-          <FinanceCard
-            title="Por Quinzena"
-            value={formatCurrency(totalMonthlyIncome / 2)}
-            subtitle="Média por período"
-            icon={CreditCard}
-            delay={0.05}
-          />
+          {data.paymentDays.length > 2 && (
+            <FinanceCard
+              title="Por Quinzena"
+              value={formatCurrency(totalMonthlyIncome / 2)}
+              subtitle="Média por período"
+              icon={CreditCard}
+              delay={0.05}
+            />
+          )}
           <FinanceCard
             title="Guardando"
             value={formatCurrency(monthlySavings)}
@@ -172,27 +212,35 @@ const Index = () => {
           className="mt-8 rounded-2xl bg-card p-6 shadow-card"
         >
           <h3 className="font-display text-lg font-semibold">Próximos Recebimentos</h3>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {data.paymentDays.map((payment) => {
-              const today = new Date().getDate();
-              const isUpcoming = payment.day >= today;
-              
-              return (
-                <div
-                  key={payment.id}
-                  className={`rounded-xl px-4 py-2 ${
-                    isUpcoming
-                      ? 'bg-accent/10 text-accent'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  <span className="font-semibold">Dia {payment.day}</span>
-                  <span className="ml-2 text-sm">
-                    {formatCurrency(payment.amount)}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="mt-4">
+            {data.paymentDays.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">
+                Nenhum dia de pagamento configurado
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {data.paymentDays.map((payment) => {
+                  const today = new Date().getDate();
+                  const isUpcoming = payment.day >= today;
+
+                  return (
+                    <div
+                      key={payment.id}
+                      className={`rounded-xl px-4 py-2 ${
+                        isUpcoming
+                          ? 'bg-accent/10 text-accent'
+                          : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      <span className="font-semibold">Dia {payment.day}</span>
+                      <span className="ml-2 text-sm">
+                        {formatCurrency(payment.amount)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </motion.div>
       </main>

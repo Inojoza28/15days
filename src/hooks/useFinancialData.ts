@@ -3,7 +3,7 @@ import { FinancialData, PaymentDay, SavingsGoal } from '@/types/finance';
 
 const DEFAULT_DATA: FinancialData = {
   paymentDays: [],
-  savingsPercentage: 0,
+  savingsPercentage: 15,
   savingsGoals: [],
   monthlyExpenses: 0,
   userName: '',
