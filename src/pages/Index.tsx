@@ -22,6 +22,7 @@ const Index = () => {
     monthlySavings,
     availableAfterSavings,
     updateSavingsPercentage,
+    addToGoal,
   } = useFinancialData();
 
   const [showPaydayModal, setShowPaydayModal] = useState(false);
@@ -134,7 +135,7 @@ const Index = () => {
             variant="accent"
             delay={0}
           />
-          {data.paymentDays.length > 2 && (
+          {data.paymentDays.length >= 2 && (
             <FinanceCard
               title="Por Quinzena"
               value={formatCurrency(totalMonthlyIncome / 2)}
@@ -189,7 +190,14 @@ const Index = () => {
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.savingsGoals.map((goal, index) => (
-              <SavingsGoalCard key={goal.id} goal={goal} index={index} monthlySavings={monthlySavings} />
+              <SavingsGoalCard
+                key={goal.id}
+                goal={goal}
+                index={index}
+                monthlySavings={monthlySavings}
+                paymentDays={data.paymentDays}
+                onAddToGoal={addToGoal}
+              />
             ))}
           </div>
 
