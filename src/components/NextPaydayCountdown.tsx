@@ -7,18 +7,23 @@ interface NextPaydayCountdownProps {
 }
 
 export function NextPaydayCountdown({ paymentDays }: NextPaydayCountdownProps) {
+
+  if (!paymentDays || paymentDays.length === 0) {
+    return null;
+  }
+
   const today = new Date();
   const currentDay = today.getDate();
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
   const sortedDays = [...paymentDays].sort((a, b) => a.day - b.day);
-  
+
   let nextPayment: PaymentDay | null = null;
   let daysUntil = 0;
 
   const laterThisMonth = sortedDays.find(p => p.day > currentDay);
-  
+
   if (laterThisMonth) {
     nextPayment = laterThisMonth;
     daysUntil = laterThisMonth.day - currentDay;

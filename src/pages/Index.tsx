@@ -67,6 +67,53 @@ const Index = () => {
     setShowPaydayModal(true);
   };
 
+  const navigateToConfig = () => {
+    window.location.href = '/configurar';
+  };
+
+  // Exibe tela de boas-vindas se não houver dados relevantes cadastrados (nome sozinho não conta)
+  const isFirstAccess = !data.paymentDays.length && !data.savingsGoals.length && !data.monthlyExpenses;
+
+  if (isFirstAccess) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-green-50 to-blue-50 px-4">
+        <div className="flex flex-col items-center w-full max-w-md">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 text-lg shadow-sm">
+              <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M12 17v.01M9 21h6a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v14a2 2 0 002 2z' />
+              </svg>
+            </span>
+            <span className="text-xs font-semibold text-emerald-700">Privacidade e Segurança</span>
+          </div>
+          <div className="flex flex-col items-center mb-6">
+            <img src="/15days.png" alt="Logo 15days" className="w-24 h-24 mb-2 drop-shadow-md opacity-95 transition-transform duration-500 hover:scale-105" />
+            <span className="font-display text-2xl font-extrabold tracking-tight text-primary mt-1 select-none">15days</span>
+          </div>
+          <span className="mb-4 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold tracking-wide shadow-sm">Seu próximo passo para o equilíbrio financeiro</span>
+          <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 text-center text-primary">
+            Metas claras, vida leve
+          </h1>
+          <p className="text-muted-foreground text-center max-w-md mb-4 text-base md:text-lg">
+            Organize suas metas financeiras de acordo com seu salário, com total privacidade e controle. Tenha uma visão clara dos seus objetivos e do seu progresso.
+          </p>
+          {/* Espaço reservado para manter o espaçamento visual */}
+          <div className="mb-8" />
+          <button
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-3 text-lg font-bold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            style={{ boxShadow: '0 4px 24px 0 rgba(16, 185, 129, 0.10)' }}
+            onClick={navigateToConfig}
+          >
+            <span className="tracking-wide">Começar agora</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L21 12m0 0l-3.75 5.25M21 12H3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -96,13 +143,15 @@ const Index = () => {
             variant="accent"
             delay={0}
           />
-          <FinanceCard
-            title="Por Quinzena"
-            value={formatCurrency(totalMonthlyIncome / 2)}
-            subtitle="Média por período"
-            icon={CreditCard}
-            delay={0.05}
-          />
+          {data.paymentDays.length > 1 && (
+            <FinanceCard
+              title="Por Quinzena"
+              value={formatCurrency(totalMonthlyIncome / 2)}
+              subtitle="Média por período"
+              icon={CreditCard}
+              delay={0.05}
+            />
+          )}
           <FinanceCard
             title="Guardando"
             value={formatCurrency(monthlySavings)}
@@ -148,9 +197,17 @@ const Index = () => {
             <h2 className="font-display text-lg font-semibold">Suas Metas</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.savingsGoals.map((goal, index) => (
-              <SavingsGoalCard key={goal.id} goal={goal} index={index} monthlySavings={monthlySavings} />
-            ))}
+            {data.savingsGoals.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <span className="text-3xl mb-2">🎯</span>
+                <span className="font-medium">Nenhuma meta cadastrada ainda</span>
+                <span className="text-sm mt-1">Adicione uma meta para acompanhar seu progresso!</span>
+              </div>
+            ) : (
+              data.savingsGoals.map((goal, index) => (
+                <SavingsGoalCard key={goal.id} goal={goal} index={index} monthlySavings={monthlySavings} />
+              ))
+            }
           </div>
 
           {/* Simulate payday button */}
@@ -173,26 +230,33 @@ const Index = () => {
         >
           <h3 className="font-display text-lg font-semibold">Próximos Recebimentos</h3>
           <div className="mt-4 flex flex-wrap gap-3">
-            {data.paymentDays.map((payment) => {
-              const today = new Date().getDate();
-              const isUpcoming = payment.day >= today;
-              
-              return (
-                <div
-                  key={payment.id}
-                  className={`rounded-xl px-4 py-2 ${
-                    isUpcoming
-                      ? 'bg-accent/10 text-accent'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  <span className="font-semibold">Dia {payment.day}</span>
-                  <span className="ml-2 text-sm">
-                    {formatCurrency(payment.amount)}
-                  </span>
-                </div>
-              );
-            })}
+            {data.paymentDays.length === 0 ? (
+              <div className="w-full flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <span className="text-2xl mb-2">💸</span>
+                <span className="font-medium">Nenhum dia de pagamento cadastrado</span>
+                <span className="text-sm mt-1">Adicione um pagamento para começar a organizar!</span>
+              </div>
+            ) : (
+              data.paymentDays.map((payment) => {
+                const today = new Date().getDate();
+                const isUpcoming = payment.day >= today;
+                return (
+                  <div
+                    key={payment.id}
+                    className={`rounded-xl px-4 py-2 ${
+                      isUpcoming
+                        ? 'bg-accent/10 text-accent'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    <span className="font-semibold">Dia {payment.day}</span>
+                    <span className="ml-2 text-sm">
+                      {formatCurrency(payment.amount)}
+                    </span>
+                  </div>
+                );
+              })
+            )}
           </div>
         </motion.div>
       </main>
