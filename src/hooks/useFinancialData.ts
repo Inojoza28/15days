@@ -7,6 +7,7 @@ const DEFAULT_DATA: FinancialData = {
   savingsGoals: [],
   monthlyExpenses: 0,
   userName: '',
+  numbersVisible: true,
 };
 
 export function useFinancialData() {
@@ -87,6 +88,10 @@ export function useFinancialData() {
     setData((prev) => ({ ...prev, userName: name }));
   }, []);
 
+  const toggleNumbersVisibility = useCallback(() => {
+    setData((prev) => ({ ...prev, numbersVisible: !prev.numbersVisible }));
+  }, []);
+
   return {
     data,
     totalMonthlyIncome,
@@ -102,5 +107,6 @@ export function useFinancialData() {
     addSavingsGoal,
     removeSavingsGoal,
     updateUserName,
+    toggleNumbersVisibility,
   };
 }

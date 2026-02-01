@@ -20,6 +20,7 @@ export interface FinancialData {
   savingsGoals: SavingsGoal[];
   monthlyExpenses: number;
   userName: string;
+  numbersVisible: boolean;
 }
 
 export interface PaydayNotification {

@@ -23,6 +23,7 @@ const Index = () => {
     availableAfterSavings,
     updateSavingsPercentage,
     addToGoal,
+    toggleNumbersVisibility,
   } = useFinancialData();
 
   const [showPaydayModal, setShowPaydayModal] = useState(false);
@@ -134,6 +135,8 @@ const Index = () => {
             icon={Wallet}
             variant="accent"
             delay={0}
+            numbersVisible={data.numbersVisible}
+            onToggleVisibility={toggleNumbersVisibility}
           />
           {data.paymentDays.length >= 2 && (
             <FinanceCard
@@ -142,6 +145,8 @@ const Index = () => {
               subtitle="Média por período"
               icon={CreditCard}
               delay={0.05}
+              numbersVisible={data.numbersVisible}
+              onToggleVisibility={toggleNumbersVisibility}
             />
           )}
           <FinanceCard
@@ -150,6 +155,8 @@ const Index = () => {
             subtitle={`${data.savingsPercentage}% do total • valor fixo mensal`}
             icon={PiggyBank}
             delay={0.1}
+            numbersVisible={data.numbersVisible}
+            onToggleVisibility={toggleNumbersVisibility}
           />
           <FinanceCard
             title="Disponível"
@@ -158,6 +165,8 @@ const Index = () => {
             icon={TrendingUp}
             trend={availableAfterSavings > 0 ? 'up' : 'down'}
             delay={0.15}
+            numbersVisible={data.numbersVisible}
+            onToggleVisibility={toggleNumbersVisibility}
           />
         </div>
 

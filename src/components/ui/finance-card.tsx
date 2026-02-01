@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Eye, EyeOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface FinanceCardProps {
   title: string;
@@ -11,6 +12,8 @@ interface FinanceCardProps {
   trend?: 'up' | 'down' | 'neutral';
   className?: string;
   delay?: number;
+  numbersVisible?: boolean;
+  onToggleVisibility?: () => void;
 }
 
 export function FinanceCard({
@@ -22,6 +25,8 @@ export function FinanceCard({
   trend,
   className,
   delay = 0,
+  numbersVisible = true,
+  onToggleVisibility,
 }: FinanceCardProps) {
   return (
     <motion.div
@@ -37,7 +42,7 @@ export function FinanceCard({
       )}
     >
       <div className="flex items-start justify-between">
-        <div className="space-y-1">
+        <div className="space-y-1 flex-1">
           <p
             className={cn(
               'text-sm font-medium',
@@ -46,39 +51,64 @@ export function FinanceCard({
           >
             {title}
           </p>
-          <p
-            className={cn(
-              'font-display text-2xl font-bold tracking-tight',
-              variant === 'accent' ? 'text-accent-foreground' : 'text-foreground'
+          <div className="flex items-center gap-2">
+            <p
+              className={cn(
+                'font-display text-2xl font-bold tracking-tight transition-all duration-300',
+                variant === 'accent' ? 'text-accent-foreground' : 'text-foreground',
+                !numbersVisible && 'blur-sm select-none'
+              )}
+            >
+              {numbersVisible ? value : '••••••••'}
+            </p>
+            {onToggleVisibility && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleVisibility}
+                className={cn(
+                  'h-6 w-6 rounded-md opacity-60 hover:opacity-100 transition-all duration-200',
+                  variant === 'accent'
+                    ? 'hover:bg-accent-foreground/10'
+                    : 'hover:bg-accent/20'
+                )}
+              >
+                {numbersVisible ? (
+                  <Eye className="h-3 w-3" />
+                ) : (
+                  <EyeOff className="h-3 w-3" />
+                )}
+              </Button>
             )}
-          >
-            {value}
-          </p>
+          </div>
           {subtitle && (
             <p
               className={cn(
-                'text-xs',
-                variant === 'accent' ? 'text-accent-foreground/70' : 'text-muted-foreground'
+                'text-xs transition-all duration-300',
+                variant === 'accent' ? 'text-accent-foreground/70' : 'text-muted-foreground',
+                !numbersVisible && 'blur-sm select-none'
               )}
             >
-              {subtitle}
+              {numbersVisible ? subtitle : '••••••••••••••'}
             </p>
           )}
         </div>
-        <div
-          className={cn(
-            'flex h-12 w-12 items-center justify-center rounded-xl',
-            variant === 'accent'
-              ? 'bg-accent-foreground/20'
-              : 'bg-accent/10'
-          )}
-        >
-          <Icon
+        <div className="flex flex-col items-end">
+          <div
             className={cn(
-              'h-6 w-6',
-              variant === 'accent' ? 'text-accent-foreground' : 'text-accent'
+              'flex h-12 w-12 items-center justify-center rounded-xl',
+              variant === 'accent'
+                ? 'bg-accent-foreground/20'
+                : 'bg-accent/10'
             )}
-          />
+          >
+            <Icon
+              className={cn(
+                'h-6 w-6',
+                variant === 'accent' ? 'text-accent-foreground' : 'text-accent'
+              )}
+            />
+          </div>
         </div>
       </div>
       {trend && (
